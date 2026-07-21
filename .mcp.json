@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "blog-manager": {
+      "command": "D:/Python312/python.exe",
+      "args": ["D:/123pan/Downloads/untitled/XinghuisamaBlogs/blog-mcp/server.py"]
+    }
+  }
+}
