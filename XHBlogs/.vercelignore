@@ -1,0 +1,6 @@
+data/bilibili-cookie.txt
+data/netease-cookie.json
+data/local-music.json
+public/music/*
+public/images/*
+public/spaceship.bin
