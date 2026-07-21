@@ -1,5 +1,7 @@
 import os
 import shutil
+import json
+import subprocess
 from fastapi import APIRouter, Request
 
 router = APIRouter()
@@ -93,3 +95,56 @@ async def execute_sync(request: Request):
         return {"success": True, "message": "🎉 完美撒花！所有文章与配置已镜像覆盖至目标博客。"}
     except Exception as e:
         return {"success": False, "message": f"同步过程中发生致命错误: {str(e)}"}
+
+
+@router.post("/git-push")
+async def git_push(request: Request):
+    """自动推送到 GitHub，触发 Vercel 部署"""
+    try:
+        payload = await request.json()
+        target_path = payload.get("blogPath", "").strip()
+        git_root = os.path.abspath(os.path.join(target_path, ".."))
+
+        config_path = os.path.join(PROJECT_ROOT, "data", "deploy_config.json")
+        if os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf-8") as f:
+                config = json.load(f)
+        else:
+            config = {}
+
+        if not config.get("autoPush"):
+            return {"success": False, "message": "自动推送未开启"}
+
+        # git add
+        result = subprocess.run(
+            ["git", "add", "-A"],
+            cwd=git_root, capture_output=True, text=True, timeout=30
+        )
+
+        # git commit
+        result = subprocess.run(
+            ["git", "commit", "-m", "auto: 同步博客内容更新"],
+            cwd=git_root, capture_output=True, text=True, timeout=30
+        )
+        # commit may return non-zero if nothing to commit — that's OK
+
+        # git push
+        result = subprocess.run(
+            ["git", "push"],
+            cwd=git_root, capture_output=True, text=True, timeout=60
+        )
+
+        if result.returncode == 0:
+            msg = "🚀 已推送到 GitHub，Vercel 将在几分钟内自动更新线上网站"
+            return {"success": True, "message": msg, "stdout": result.stdout}
+        else:
+            return {
+                "success": False,
+                "message": f"Git push 失败: {result.stderr}",
+                "stdout": result.stdout,
+                "stderr": result.stderr
+            }
+    except subprocess.TimeoutExpired:
+        return {"success": False, "message": "Git 操作超时，请检查网络"}
+    except Exception as e:
+        return {"success": False, "message": f"推送异常: {str(e)}"}

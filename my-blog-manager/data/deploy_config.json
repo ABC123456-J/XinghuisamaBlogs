@@ -2,6 +2,7 @@
   "blogPath": "D:\\123pan\\Downloads\\untitled\\XinghuisamaBlogs\\XHBlogs",
   "staticRepoUrl": "",
   "staticBranch": "gh-pages",
-  "sourceRepoUrl": "",
-  "sourceBranch": "main"
+  "sourceRepoUrl": "https://github.com/ABC123456-J/XinghuisamaBlogs.git",
+  "sourceBranch": "main",
+  "autoPush": true
 }

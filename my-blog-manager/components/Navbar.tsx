@@ -184,6 +184,18 @@ export default function Navbar() {
       const data = await res.json();
       if (data.success) {
         showToast(data.message, "success");
+        // 🌟 自动推送到 GitHub，触发 Vercel 部署
+        try {
+          const pushRes = await fetch(`http://127.0.0.1:${configData.api_port}/api/sync/git-push`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ blogPath: targetBlogPath })
+          });
+          const pushData = await pushRes.json();
+          showToast(pushData.message, pushData.success ? "success" : "info");
+        } catch {
+          showToast("⚠️ 同步完成，但自动推送失败，请手动 push", "info");
+        }
       } else {
         showToast(`❌ 同步失败: ${data.message}`, "error");
       }
