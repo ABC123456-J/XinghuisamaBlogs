@@ -16,7 +16,7 @@ export default function MusicSearchInput({ value, onChange }: {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Song[]>([]);
   const [searching, setSearching] = useState(false);
-  const [source, setSource] = useState('netease');
+  const [source, setSource] = useState(value?.source || value?.id ? value?.source || 'netease' : 'netease');
   const [uploading, setUploading] = useState(false);
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
