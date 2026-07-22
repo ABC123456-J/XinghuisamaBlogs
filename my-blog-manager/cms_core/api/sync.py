@@ -130,7 +130,7 @@ async def git_push(request: Request):
 
         # git push
         result = subprocess.run(
-            ["git", "push"],
+            ["git", "push", "origin", "main"],
             cwd=git_root, capture_output=True, text=True, timeout=60
         )
 
